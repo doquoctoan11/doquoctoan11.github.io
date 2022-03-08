@@ -1,0 +1,66 @@
+#1.Đưa ra thông tin gồm mã số, họ tênvà tên khoa của tất cả các giảng viên
+SELECT gv.Magv,gv.Hotengv ,k.Tenkhoa FROM thuctap.tblgiangvien as gv inner join thuctap.tblkhoa as k on gv.Makhoa=k.Makhoa ;
+#2. Đưa ra thông tin gồm mã số, họ tênvà tên khoa của các giảng viên của khoa ‘DIA LY va QLTN’
+select gv.Magv,gv.Hotengv ,k.Tenkhoa from thuctap.tblgiangvien as gv inner join thuctap.tblkhoa as k on gv.Makhoa=k.Makhoa where k.Tenkhoa='DIA LY va QLTN';
+#3.Cho biết số sinh viên của khoa ‘CONG NGHE SINH HOC’
+select  count(sv.Masv) from thuctap.tblkhoa as k inner join thuctap.tblsinhvien as sv on  k.Makhoa=sv.Makhoa where k.Tenkhoa='CONG NGHE SINH HOC';
+#4.Đưa ra danh sách gồm mã số, họ tênvà tuổi của các sinh viên khoa ‘TOAN’
+select   sv.Masv, sv.Hotensv ,(year(curdate())-sv.Namsinh )from thuctap.tblkhoa as k inner join thuctap.tblsinhvien as sv on  k.Makhoa=sv.Makhoa where k.Tenkhoa='TOAN';
+#5. Cho biết số giảng viên của khoa ‘CONG NGHE SINH HOC’
+select  count(k.Makhoa) from thuctap.tblkhoa as k where k.Tenkhoa='CONG NGHE SINH HOC';
+#6. Cho biết thông tin về sinh viên không tham gia thực tập
+select sv.* from thuctap.tblsinhvien as sv 
+where sv.Masv not in (select m.Masv from thuctap.tblhuongdan as m);
+#7.Đưa ra mã khoa, tên khoa và số giảng viên của mỗi khoa
+select k.Makhoa,k.Tenkhoa,count(gv.Magv) from thuctap.tblkhoa as k  inner join thuctap.tblgiangvien as gv on gv.Makhoa=k.Makhoa 
+group by k.Makhoa;
+#8.Cho biết số điện thoại của khoa mà sinh viên có tên ‘Le van son’ đang theo học
+select k.Dienthoai from thuctap.tblkhoa as k inner join thuctap.tblsinhvien as sv on sv.Makhoa=k.Makhoa 
+where sv.Hotensv='Le van son';
+
+
+#Phan II
+
+#1. Cho biết mã số và tên của các đề tài do giảng viên ‘Tran son’ hướng dẫn
+select dt.Madt ,dt.Tendt  from thuctap.tbldetai as dt inner join thuctap.tblhuongdan as hd on dt.Madt=hd.Madt
+inner join thuctap.tblgiangvien as gv on hd.Magv= gv.Magv
+where gv.Hotengv='Tran son' ;
+#2. Cho biết tên đề tài không có sinh viên nào thực tập
+select dt.Tendt from thuctap.tbldetai as dt 
+where dt.Madt not in (select th.Madt from thuctap.tblhuongdan th);
+#3. Cho biết mã số, họ tên, tên khoa của các giảng viên hướng dẫn từ 3 sinh viên trở lên.
+select gv.Magv,gv.Hotengv, k.Tenkhoa ,count(hd.Masv)
+from thuctap.tblgiangvien as gv inner join thuctap.tblkhoa k on k.Makhoa=gv.Makhoa
+inner join thuctap.tblhuongdan hd on hd.Magv=gv.Magv
+group by gv.Magv
+having count(hd.Masv)>=3;
+#4. Cho biết mã số, tên đề tài của đề tài có kinh phí cao nhất
+select dt1.*
+from thuctap.tbldetai dt1
+where dt1.Kinhphi >= (select max(dt2.Kinhphi) from thuctap.tbldetai dt2);
+ 
+#5. Cho biết mã số và tên các đề tài có nhiều hơn 2 sinh viên tham gia thực tập
+select dt.Madt, dt.Tendt
+from thuctap.tbldetai dt inner join thuctap.tblhuongdan  hd on dt.Madt=hd.Madt
+group by dt.Madt
+having count(hd.Masv)>2;
+#6. Đưa ra mã số, họ tên và điểm của các sinh viên khoa ‘DIALY và QLTN’
+select sv.Masv,sv.Hotensv,hd.KetQua
+from thuctap.tblsinhvien sv inner join thuctap.tblkhoa k on k.Makhoa=sv.Makhoa
+inner join thuctap.tblhuongdan hd on hd.Masv=sv.Masv
+where k.Tenkhoa like 'DIALY và QLTN';
+
+#7. Đưa ra tên khoa, số lượng sinh viên của mỗi khoa
+select k.Tenkhoa,count(sv.Masv)
+from  thuctap.tblkhoa k  inner join thuctap.tblsinhvien sv on k.Makhoa=sv.Makhoa
+group by(k.Makhoa);
+
+#8. Cho biết thông tin về các sinh viên thực tập tại quê nhà
+select sv.*
+from thuctap.tblsinhvien sv inner join thuctap.tblhuongdan hd on sv.Masv=hd.Masv
+inner join thuctap.tbldetai dt on dt.Madt=hd.Madt
+where sv.Quequan = dt.Noithuctap;
+9. Hãy cho biết thông tin về những sinh viên chưa có điểm thực tập
+
+
+10. Đưa ra danh sách gồm mã số, họ tên các sinh viên có điểm thực tập bằng 0
